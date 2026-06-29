@@ -1,0 +1,2 @@
+# DBManufacturingInventoryApp
+inventory app;
