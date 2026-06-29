@@ -5,7 +5,9 @@ This is a complete C# Windows Forms application for the GB Manufacturing Equipme
 ## Features
 - Login screen with Login, Register, Clear, and Close buttons
 - BCrypt password hashing
-- Default login: **admin** / **1976**
+- Default login: **admin1** / **1976**
+- Default login: **aemployee** / **1976**
+- Default login: **super** / **1976**
 - Register new users with role selection
 - Equipment and inventory add, update, delete, clear, and grid view
 - Checkout and return equipment
