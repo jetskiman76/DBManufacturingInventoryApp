@@ -1,56 +1,57 @@
-# GB Manufacturing Equipment and Inventory Tracking System
+# GB Manufacturing Tracker - WinForms .NET 10
 
-This is a complete C# Windows Forms application targeting **.NET 10 Windows** with **MSSQL Server / LocalDB** connectivity.
-
-## Login
-- Username: `admin`     - Password: `1976`
-
-- Username: `super`     - Password: `1976`
-
-- Username: `employee`  - Password: `1976`
+This is a complete C# Windows Forms application for the GB Manufacturing Equipment and Inventory Tracking System.
 
 ## Features
-- Login screen with Login, Register, Clear, Close buttons
-- Password hashing using SHA-256
-- Register new users
-- Dashboard navigation
-- Equipment checkout and return
-- Inventory search and quantity update
-- Damage report creation and saving
-- Saved reports with CSV export
-- MSSQL database setup script
-- Designer files for every form so Visual Studio can open the Windows Forms Designer
-- Debug profile in `Properties/launchSettings.json`
+- Login screen with Login, Register, Clear, and Close buttons
+- BCrypt password hashing
+- Default login: **admin** / **1976**
+- Register new users with role selection
+- Equipment and inventory add, update, delete, clear, and grid view
+- Checkout and return equipment
+- Mark returned equipment as damaged
+- Create and save damage reports
+- Export damage reports to text files
+- View saved reports, damage reports, overdue equipment, and export CSV reports
+- MSSQL Server database script included
+- Designer files included for each form so forms open in Visual Studio Designer
+- Debug profile included in `Properties/launchSettings.json`
 
-## Setup Steps
-1. Open SQL Server Management Studio or Visual Studio SQL Server Object Explorer.
-2. Run `CreateDatabase.sql`.
-3. Open `GBManufacturingTracker.csproj` in Visual Studio 2026 or newer.
-4. Restore NuGet packages.
-5. Build the project.
-6. Press F5 to run.
+## Requirements
+- Visual Studio 2026 or Visual Studio with .NET 10 SDK support
+- SQL Server LocalDB or SQL Server Express
+- NuGet packages restore automatically:
+  - Microsoft.Data.SqlClient
+  - BCrypt.Net-Next
 
-## Connection String
-The connection string is in `AppConfig.cs`:
+## Setup
+1. Open SQL Server Management Studio.
+2. Run `Database.sql`.
+3. Open `GBManufacturingTracker.csproj` in Visual Studio.
+4. Restore NuGet packages if prompted.
+5. Confirm the connection string in `Db.cs` matches your SQL Server:
 
 ```csharp
 Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=GBManufacturingTrackerDB;Integrated Security=True;Encrypt=False;TrustServerCertificate=True
 ```
 
-Change it if you are using a full SQL Server instance.
+6. Press F5 to run.
+7. Log in with:
+   - Username: `admin`
+   - Password: `1976`
 
-## Class Layout
-- `Program.cs` starts the WinForms app.
-- `AppConfig.cs` stores the database connection string.
-- `Db.cs` handles database commands, scalar values, and DataTables.
-- `PasswordHasher.cs` hashes and verifies passwords.
-- `LoginForm.cs` / `.Designer.cs` handles login.
-- `RegisterForm.cs` / `.Designer.cs` creates users.
-- `DashboardForm.cs` / `.Designer.cs` opens system modules.
-- `EquipmentForm.cs` / `.Designer.cs` checks equipment out and returns it.
-- `InventoryForm.cs` / `.Designer.cs` searches and updates inventory.
-- `DamageReportForm.cs` / `.Designer.cs` saves damaged equipment reports.
-- `ReportsForm.cs` / `.Designer.cs` displays and exports reports.
+## Form/Class Layout
+- `Program.cs` - starts the application
+- `Db.cs` - SQL Server helper methods
+- `PasswordHasher.cs` - password hash/verify helper
+- `Session.cs` - stores current logged-in user
+- `LoginForm` - login UI
+- `RegisterForm` - user registration UI
+- `DashboardForm` - main navigation menu
+- `EquipmentForm` - equipment/inventory management
+- `CheckoutForm` - checkout/return workflow
+- `DamageReportForm` - damage report creation and export
+- `ReportsForm` - report viewing and CSV export
 
 ## Notes
-This application follows the project requirements for the GB Manufacturing Equipment and Inventory Tracking System: authentication, equipment tracking, inventory search, damage reporting, and management reports.
+The app follows a layered layout: presentation forms call helper/business code, and all persistent records are stored in the centralized MSSQL database.
