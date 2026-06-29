@@ -1,13 +1,177 @@
 using Microsoft.Data.SqlClient;
+
 namespace GBManufacturingTracker;
+
+/// <summary>
+/// Provides equipment management functionality including
+/// adding, updating, deleting, clearing, and viewing equipment records.
+/// </summary>
 public partial class EquipmentForm : Form
 {
-    public EquipmentForm(){ InitializeComponent(); LoadData(); }
-    private void LoadData(){ dgvEquipment.DataSource=Db.GetTable("SELECT EquipmentID, Barcode, EquipmentName, Category, SerialNumber, WarehouseLocation, Status FROM Equipment ORDER BY EquipmentName"); }
-    private void btnSave_Click(object? s, EventArgs e){ Db.Execute(@"INSERT INTO Equipment(Barcode,EquipmentName,Category,SerialNumber,WarehouseLocation,Status) VALUES(@b,@n,@c,@sn,@w,@st)",new SqlParameter("@b",txtBarcode.Text),new SqlParameter("@n",txtName.Text),new SqlParameter("@c",txtCategory.Text),new SqlParameter("@sn",txtSerial.Text),new SqlParameter("@w",txtLocation.Text),new SqlParameter("@st",cboStatus.Text)); LoadData(); }
-    private void btnUpdate_Click(object? s, EventArgs e){ if(txtId.Text=="")return; Db.Execute(@"UPDATE Equipment SET Barcode=@b, EquipmentName=@n, Category=@c, SerialNumber=@sn, WarehouseLocation=@w, Status=@st WHERE EquipmentID=@id",new SqlParameter("@id",txtId.Text),new SqlParameter("@b",txtBarcode.Text),new SqlParameter("@n",txtName.Text),new SqlParameter("@c",txtCategory.Text),new SqlParameter("@sn",txtSerial.Text),new SqlParameter("@w",txtLocation.Text),new SqlParameter("@st",cboStatus.Text)); LoadData(); }
-    private void btnDelete_Click(object? s, EventArgs e){ if(txtId.Text=="")return; Db.Execute("DELETE FROM Equipment WHERE EquipmentID=@id",new SqlParameter("@id",txtId.Text)); Clear(); LoadData(); }
-    private void btnClear_Click(object? s, EventArgs e)=>Clear(); private void btnClose_Click(object? s, EventArgs e)=>Close();
-    private void Clear(){foreach(Control c in grpDetails.Controls) if(c is TextBox t)t.Clear(); cboStatus.SelectedIndex=0;}
-    private void dgvEquipment_CellClick(object? s, DataGridViewCellEventArgs e){ if(e.RowIndex<0)return; var r=dgvEquipment.Rows[e.RowIndex]; txtId.Text=r.Cells["EquipmentID"].Value?.ToString(); txtBarcode.Text=r.Cells["Barcode"].Value?.ToString(); txtName.Text=r.Cells["EquipmentName"].Value?.ToString(); txtCategory.Text=r.Cells["Category"].Value?.ToString(); txtSerial.Text=r.Cells["SerialNumber"].Value?.ToString(); txtLocation.Text=r.Cells["WarehouseLocation"].Value?.ToString(); cboStatus.Text=r.Cells["Status"].Value?.ToString(); }
+    /// <summary>
+    /// Initializes the Equipment form.
+    /// </summary>
+    public EquipmentForm()
+    {
+        InitializeComponent();
+
+        // Load equipment records when the form opens.
+        LoadData();
+    }
+
+    /// <summary>
+    /// Loads all equipment records into the DataGridView.
+    /// </summary>
+    private void LoadData()
+    {
+        dgvEquipment.DataSource = Db.GetTable(@"
+            SELECT
+                EquipmentID,
+                Barcode,
+                EquipmentName,
+                Category,
+                SerialNumber,
+                WarehouseLocation,
+                Status
+            FROM Equipment
+            ORDER BY EquipmentName");
+    }
+
+    /// <summary>
+    /// Saves a new equipment record.
+    /// </summary>
+    private void btnSave_Click(object? sender, EventArgs e)
+    {
+        Db.Execute(@"
+            INSERT INTO Equipment
+            (
+                Barcode,
+                EquipmentName,
+                Category,
+                SerialNumber,
+                WarehouseLocation,
+                Status
+            )
+            VALUES
+            (
+                @b,
+                @n,
+                @c,
+                @sn,
+                @w,
+                @st
+            )",
+            new SqlParameter("@b", txtBarcode.Text),
+            new SqlParameter("@n", txtName.Text),
+            new SqlParameter("@c", txtCategory.Text),
+            new SqlParameter("@sn", txtSerial.Text),
+            new SqlParameter("@w", txtLocation.Text),
+            new SqlParameter("@st", cboStatus.Text));
+
+        // Refresh the equipment list.
+        LoadData();
+    }
+
+    /// <summary>
+    /// Updates the selected equipment record.
+    /// </summary>
+    private void btnUpdate_Click(object? sender, EventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(txtId.Text))
+            return;
+
+        Db.Execute(@"
+            UPDATE Equipment
+            SET
+                Barcode = @b,
+                EquipmentName = @n,
+                Category = @c,
+                SerialNumber = @sn,
+                WarehouseLocation = @w,
+                Status = @st
+            WHERE EquipmentID = @id",
+            new SqlParameter("@id", txtId.Text),
+            new SqlParameter("@b", txtBarcode.Text),
+            new SqlParameter("@n", txtName.Text),
+            new SqlParameter("@c", txtCategory.Text),
+            new SqlParameter("@sn", txtSerial.Text),
+            new SqlParameter("@w", txtLocation.Text),
+            new SqlParameter("@st", cboStatus.Text));
+
+        // Refresh the equipment list.
+        LoadData();
+    }
+
+    /// <summary>
+    /// Deletes the selected equipment record.
+    /// </summary>
+    private void btnDelete_Click(object? sender, EventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(txtId.Text))
+            return;
+
+        Db.Execute(@"
+            DELETE FROM Equipment
+            WHERE EquipmentID = @id",
+            new SqlParameter("@id", txtId.Text));
+
+        // Clear the entry controls.
+        Clear();
+
+        // Refresh the equipment list.
+        LoadData();
+    }
+
+    /// <summary>
+    /// Clears all entry controls.
+    /// </summary>
+    private void btnClear_Click(object? sender, EventArgs e)
+    {
+        Clear();
+    }
+
+    /// <summary>
+    /// Closes the Equipment form.
+    /// </summary>
+    private void btnClose_Click(object? sender, EventArgs e)
+    {
+        Close();
+    }
+
+    /// <summary>
+    /// Clears all input fields and resets the status selection.
+    /// </summary>
+    private void Clear()
+    {
+        foreach (Control control in grpDetails.Controls)
+        {
+            if (control is TextBox textBox)
+            {
+                textBox.Clear();
+            }
+        }
+
+        cboStatus.SelectedIndex = 0;
+    }
+
+    /// <summary>
+    /// Loads the selected equipment record into the input controls.
+    /// </summary>
+    private void dgvEquipment_CellClick(
+        object? sender,
+        DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex < 0)
+            return;
+
+        DataGridViewRow row = dgvEquipment.Rows[e.RowIndex];
+
+        txtId.Text = row.Cells["EquipmentID"].Value?.ToString();
+        txtBarcode.Text = row.Cells["Barcode"].Value?.ToString();
+        txtName.Text = row.Cells["EquipmentName"].Value?.ToString();
+        txtCategory.Text = row.Cells["Category"].Value?.ToString();
+        txtSerial.Text = row.Cells["SerialNumber"].Value?.ToString();
+        txtLocation.Text = row.Cells["WarehouseLocation"].Value?.ToString();
+        cboStatus.Text = row.Cells["Status"].Value?.ToString();
+    }
 }
